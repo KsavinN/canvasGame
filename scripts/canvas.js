@@ -9,6 +9,7 @@
   canvas.width=window.innerWidth;
   canvas.height=window.innerHeight;
   var restart = false;
+  var frames = 25;
 
     
 
@@ -50,7 +51,7 @@ var movePlayer_1 = function(positionY){
 }
 
 var movePlayer_2 = function(positionY){
-  if(positionY<=50 || positionY>canvas.height/1.4){
+  if(positionY<=50 || positionY>canvas.height/1.6){
 
   }else{
     context.clearRect(player2.positionX-1,player2.positionY, 30, 200);
@@ -89,7 +90,7 @@ var moveBall = function(){
     restart=false;
   },800)
  } else {
-  context.clearRect(ball.positionX-10,ball.positionY-10,21,21);
+  context.clearRect(ball.positionX-10,ball.positionY-10,20.5,20.5);
   ball.positionX=ball.positionX+vectorBall.x;
   ball.positionY=ball.positionY+vectorBall.y;
   if(ball.positionX<=10){
@@ -100,11 +101,13 @@ var moveBall = function(){
     player2.points=player2.points+1;
     gotPoints();
   }
-  if(ball.positionY<=65) {
-    vectorBall.y=10;
+  if(ball.positionY<=72) {
+    vectorBall.y=Math.floor(Math.random()*5+10);
+    makeTableGame();
   }
-  if(ball.positionY>=canvas.height/1.119){
-    vectorBall.y=-10;
+  if(ball.positionY>=canvas.height/1.124){
+    vectorBall.y=-1*Math.floor(Math.random()*5+10);
+    makeTableGame();
   }
   checkImpact();
   drawBall(ball.positionX,ball.positionY);
@@ -112,7 +115,7 @@ var moveBall = function(){
 }
 
 var drawText = function(text,positionX) {
-  context.clearRect(positionX,0,40,40);
+  context.clearRect(positionX,0,50,50);
   context.font = '45px Arial White'
   context.fillText(text, positionX, 40);
 }
@@ -124,21 +127,22 @@ var makeTableGame = function(){
 }
 
 var checkImpact = function() {
-  if(ball.positionX<=40){
+  if(ball.positionX<=41){
     if(ball.positionY>=player1.positionY && ball.positionY<=player1.positionY+200){
       vectorBall.x=(vectorBall.x*-1);
-      setTimeout(function(){drawRectangle(context,player1.positionX,player1.positionY)},10);
+      setTimeout(function(){drawRectangle(context,player1.positionX,player1.positionY)},30);
     }
   }
-  if(ball.positionX>=canvas.width/1.044) {
+  if(ball.positionX>=canvas.width/1.046) {
     if(ball.positionY>=player2.positionY && ball.positionY<=player2.positionY+200) {
       vectorBall.x=(vectorBall.x*-1);
-      setTimeout(function(){drawRectangle(context,player2.positionX,player2.positionY)},10);
+      setTimeout(function(){drawRectangle(context,player2.positionX,player2.positionY)},30);
     }
   }
 }
 
 var gotPoints = function() {
+  vectorBall.x=-10;
   ball.positionX = canvas.width/2;
   ball.positionY = canvas.height/2;
   drawText(player1.points,canvas.width/1.9);
@@ -154,10 +158,24 @@ var setupGame = function(){
   drawText(player1.points,canvas.width/1.9);
   drawText(player2.points,canvas.width/2.1);
   window.addEventListener('keydown',doKeyDown,true);
-  setInterval(moveBall,25);
+  setInterval(moveBall,frames);
+  setInterval(AI,1);
 }
 
 
+var AI = function(){
+  if(vectorBall.x>0){
+    if(vectorBall.y<0){
+      if(ball.positionY<player2.positionY+150){
+        movePlayer_2(player2.positionY-10);
+      }
+    }else{
+      if(ball.positionY>player2.positionY+150){
+        movePlayer_2(player2.positionY+10);
+      }
+    }
+  }
+}
 
 
 setupGame();
